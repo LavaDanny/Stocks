@@ -60,6 +60,7 @@ volume_long.to_sql('volume', con, if_exists='replace', index=False)
 select_tickers = bt_inputs['tickers']
 start_date = bt_inputs['start_date']
 end_date = bt_inputs['end_date']
+
 # construct query
 query = """
 select * from prices
