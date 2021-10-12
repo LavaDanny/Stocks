@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import sqlite3
 
 # make db connection
-con = sqlite3.connect('stock.db')
+con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
 c = con.cursor()
 d = con.cursor()
 

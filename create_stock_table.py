@@ -23,7 +23,7 @@ bt_inputs = {'tickers': ['BA', 'UNH', 'MCD', 'HD'],
 'end_date': '2021-08-01'}
 
 # create a sql connection
-con = sqlite3.connect('stock.db')
+con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
 c = con.cursor()
 
 # create price table
