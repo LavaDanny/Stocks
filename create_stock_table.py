@@ -19,7 +19,7 @@ def download(bt_inputs, proxy = None):
 
 # backtest inputs
 bt_inputs = {'tickers': ['BA', 'UNH', 'MCD', 'HD'],
-'start_date': '2019-01-01',
+'start_date': '2018-01-01',
 'end_date': '2021-08-01'}
 
 # create a sql connection
