@@ -29,4 +29,4 @@ for x in range(len(buyDate)):
     sum = sellDate[i][1] - buyDate[i][1] + sum
     i += 1
 
-print(sum)
+print(sum) 
