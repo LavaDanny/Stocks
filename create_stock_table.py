@@ -71,4 +71,4 @@ c.execute(query.replace('\n',' '))
 result = pd.DataFrame(c.fetchall(), columns = ['Date', 'ticker', 'price'])
 # convert to datetime
 result['Date'] = pd.to_datetime(result['Date'])
-
+ 
