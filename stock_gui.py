@@ -5,14 +5,18 @@ import sqlite3
 from tkinter import *
 
 # make db connection
-def connect_to_db():
-    con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
+def connect_to_db(con):
     c = con.cursor()
     return c
 
 # remove ticker data from sql db
-def remove_ticker(db_con):
-    print("hey")
+def remove_ticker(db_con, ticker, con):
+
+    query = "DELETE FROM prices WHERE ticker = ?"
+    c.execute(query, (ticker,))
+
+    con.commit()
+    con.close()
 
 # create table using sql data (sellDates for now)
 class Table:
@@ -33,7 +37,8 @@ class Table:
 
 
 # make db connection
-c = connect_to_db()
+con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
+c = connect_to_db(con)
 
 # get min and max price data
 c.execute("SELECT ticker, price, MIN(Date)\
@@ -84,7 +89,7 @@ tickers.set(tickers_arr[0])
 menu_ticker = OptionMenu(window, tickers, *tickers_arr)
 menu_ticker.grid(row = 10, column = 1, padx = 10, pady = 10)
 
-remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c))
+remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con))
 remove_btn.grid(row = 10, column = 2)
 #remove_btn.bind('<Button-1', remove_ticker(c))
 
