@@ -1,3 +1,4 @@
+from os import remove
 import matplotlib.pyplot as plt
 import sqlite3
 #import tkinter as tk
@@ -8,6 +9,10 @@ def connect_to_db():
     con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
     c = con.cursor()
     return c
+
+# remove ticker data from sql db
+def remove_ticker(db_con):
+    print("hey")
 
 # create table using sql data (sellDates for now)
 class Table:
@@ -20,6 +25,12 @@ class Table:
                 self.e = Entry(window, width=20)#, fg='blue', font=('Arial',16,'bold'))
                 self.e.grid(row = i, column = j)
                 self.e.insert(END, data[i][j])
+
+
+
+
+
+
 
 # make db connection
 c = connect_to_db()
@@ -72,6 +83,10 @@ print(tickers_arr)
 tickers.set(tickers_arr[0])
 menu_ticker = OptionMenu(window, tickers, *tickers_arr)
 menu_ticker.grid(row = 10, column = 1, padx = 10, pady = 10)
+
+remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c))
+remove_btn.grid(row = 10, column = 2)
+#remove_btn.bind('<Button-1', remove_ticker(c))
 
 # start window
 window.mainloop()
