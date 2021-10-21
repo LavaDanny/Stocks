@@ -9,19 +9,33 @@ def connect_to_db(con):
     c = con.cursor()
     return c
 
-# remove ticker data from sql db
-def remove_ticker(db_con, ticker, con):
+# updates table data
+def remove_ticker(db_con, ticker, con, window, frame_data):
 
+    # remove ticker data from sql db
     query = "DELETE FROM prices WHERE ticker = ?"
     c.execute(query, (ticker,))
-
     con.commit()
-    con.close()
 
-    # update table
+    # destroy window
+    window.quit()
+    window.destroy()
+
+    # create new window and table
+    window = Tk()
+    window.title('Hello Python')
+    window.geometry("1000x300")
+
+    frame_data = Frame(window)
+    data = []
+    create_table(db_con, data, window, frame_data)
+    create_ticker_dropdown(db_con, window)
+
+    # start window
+    window.mainloop()
      
 # create table
-def create_table(db_con, data, window):
+def create_table(db_con, data, window, frame_data):
 
     # get min and max price data
     db_con.execute("SELECT ticker, price, MIN(Date)\
@@ -38,7 +52,6 @@ def create_table(db_con, data, window):
     for row in db_con.fetchall():
         sellDate.append(row)
 
-    frame_data = Frame(window)
     frame_data.grid(row = 0, column = 0)
     data = buyDate + sellDate
     frame_data = Table(window, data)
@@ -63,7 +76,7 @@ def create_ticker_dropdown(db_con, window):
     menu_ticker = OptionMenu(window, tickers, *tickers_arr)
     menu_ticker.grid(row = 10, column = 1, padx = 10, pady = 10)
 
-    remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con))
+    remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con, window, frame_data))
     remove_btn.grid(row = 10, column = 2)
     #remove_btn.bind('<Button-1', remove_ticker(c))
 
@@ -90,8 +103,9 @@ window.title('Hello Python')
 window.geometry("1000x300")
 
 # create stock table
+frame_data = Frame(window)
 data = []
-create_table(c, data, window)
+create_table(c, data, window, frame_data)
 
 # tickers drop down
 create_ticker_dropdown(c, window)
