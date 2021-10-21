@@ -1,16 +1,26 @@
 from os import remove
 import matplotlib.pyplot as plt
 import sqlite3
-#import tkinter as tk
 from tkinter import *
 
-# make db connection
-def connect_to_db(con):
-    c = con.cursor()
-    return c
+# make a new window
+def create_window(db_con):
+    # tkinter window
+    window = Tk()
+
+    window.title('Hello Python')
+    window.geometry("1000x300")
+
+    # create stock table
+    create_table(db_con, window)
+
+    # tickers drop down
+    create_ticker_dropdown(db_con, window)
+
+    return window
 
 # updates table data
-def remove_ticker(db_con, ticker, con, window, frame_data):
+def remove_ticker(db_con, ticker, con, window):
 
     # remove ticker data from sql db
     query = "DELETE FROM prices WHERE ticker = ?"
@@ -22,20 +32,16 @@ def remove_ticker(db_con, ticker, con, window, frame_data):
     window.destroy()
 
     # create new window and table
-    window = Tk()
-    window.title('Hello Python')
-    window.geometry("1000x300")
-
-    frame_data = Frame(window)
-    data = []
-    create_table(db_con, data, window, frame_data)
-    create_ticker_dropdown(db_con, window)
+    window = create_window(db_con)
 
     # start window
     window.mainloop()
      
 # create table
-def create_table(db_con, data, window, frame_data):
+def create_table(db_con, window):
+
+    data = []
+    frame_data = Frame(window)
 
     # get min and max price data
     db_con.execute("SELECT ticker, price, MIN(Date)\
@@ -56,7 +62,7 @@ def create_table(db_con, data, window, frame_data):
     data = buyDate + sellDate
     frame_data = Table(window, data)
 
-# create ticker drop down
+# create ticker drop down and remove button
 def create_ticker_dropdown(db_con, window):
     tickers = StringVar(window)
     tickers_arr = []
@@ -76,7 +82,7 @@ def create_ticker_dropdown(db_con, window):
     menu_ticker = OptionMenu(window, tickers, *tickers_arr)
     menu_ticker.grid(row = 10, column = 1, padx = 10, pady = 10)
 
-    remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con, window, frame_data))
+    remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con, window))
     remove_btn.grid(row = 10, column = 2)
     #remove_btn.bind('<Button-1', remove_ticker(c))
 
@@ -94,21 +100,9 @@ class Table:
 
 # make db connection
 con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
-c = connect_to_db(con)
+c = con.cursor()
 
-# tkinter window
-window = Tk()
-
-window.title('Hello Python')
-window.geometry("1000x300")
-
-# create stock table
-frame_data = Frame(window)
-data = []
-create_table(c, data, window, frame_data)
-
-# tickers drop down
-create_ticker_dropdown(c, window)
+window = create_window(c)
 
 # start window
 window.mainloop()
