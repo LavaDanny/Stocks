@@ -8,8 +8,8 @@ def create_window(db_con):
     # tkinter window
     window = Tk()
 
-    window.title('Hello Python')
-    window.geometry("1000x300")
+    window.title('Stock Window')
+    window.geometry("1000x1000")
 
     # create stock table
     create_table(db_con, window)
@@ -17,9 +17,12 @@ def create_window(db_con):
     # tickers drop down
     create_ticker_dropdown(db_con, window)
 
+    # create text entry to get new tickers
+    create_text_entry(window)
+
     return window
 
-# updates table data
+# updates table data by creating new window
 def remove_ticker(db_con, ticker, con, window):
 
     # remove ticker data from sql db
@@ -62,6 +65,11 @@ def create_table(db_con, window):
     data = buyDate + sellDate
     frame_data = Table(window, data)
 
+# create text entry field
+def create_text_entry(window):
+    text_entry = Text(window, height = 1, width = 10)
+    text_entry.grid(row = 11, column = 0, padx = 10, pady = 10)
+
 # create ticker drop down and remove button
 def create_ticker_dropdown(db_con, window):
     tickers = StringVar(window)
@@ -97,6 +105,7 @@ class Table:
                 self.e = Entry(window, width=20)#, fg='blue', font=('Arial',16,'bold'))
                 self.e.grid(row = i, column = j)
                 self.e.insert(END, data[i][j])
+
 
 # make db connection
 con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
