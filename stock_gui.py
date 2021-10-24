@@ -18,7 +18,10 @@ def create_window(db_con):
     create_ticker_dropdown(db_con, window)
 
     # create text entry to get new tickers
+    
     create_text_entry(window)
+
+
 
     return window
 
@@ -68,7 +71,12 @@ def create_table(db_con, window):
 # create text entry field
 def create_text_entry(window):
     text_entry = Text(window, height = 1, width = 10)
-    text_entry.grid(row = 11, column = 0, padx = 10, pady = 10)
+    text_entry.grid(row = 11, column = 1, padx = 10, pady = 10)
+
+    # text indicating use for right box
+    l = Label(window, text = "Ticker to be added: ")
+    l.grid(row = 11, column = 0, padx = 10, pady = 10)
+
 
 # create ticker drop down and remove button
 def create_ticker_dropdown(db_con, window):
@@ -88,10 +96,10 @@ def create_ticker_dropdown(db_con, window):
 
     tickers.set(tickers_arr[0])
     menu_ticker = OptionMenu(window, tickers, *tickers_arr)
-    menu_ticker.grid(row = 10, column = 1, padx = 10, pady = 10)
+    menu_ticker.grid(row = 10, column = 0, padx = 10, pady = 10)
 
     remove_btn = Button(window, text = "remove selected ticker", command = lambda: remove_ticker(c, tickers.get(), con, window))
-    remove_btn.grid(row = 10, column = 2)
+    remove_btn.grid(row = 10, column = 1)
     #remove_btn.bind('<Button-1', remove_ticker(c))
 
 # class to create table using sql data (sellDates for now)
