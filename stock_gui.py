@@ -8,6 +8,7 @@ def create_window(db_con):
     # tkinter window
     window = Tk()
 
+    # define window
     window.title('Stock Window')
     window.geometry("1000x1000")
 
@@ -20,8 +21,6 @@ def create_window(db_con):
     # create text entry to get new tickers
     
     create_text_entry(window)
-
-
 
     return window
 
