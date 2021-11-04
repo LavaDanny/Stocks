@@ -4,7 +4,6 @@ import sqlite3
 # make db connection
 con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
 c = con.cursor()
-d = con.cursor()
 
 # get min and max price data
 c.execute("SELECT ticker, price, MIN(Date)\
