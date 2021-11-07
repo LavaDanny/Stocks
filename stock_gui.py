@@ -2,6 +2,9 @@ from os import remove
 import matplotlib.pyplot as plt
 import sqlite3
 from tkinter import *
+import mysql.connector
+import aws_config
+from sqlalchemy import create_engine
 
 # make a new window
 def create_window(db_con):
@@ -115,8 +118,17 @@ class Table:
 
 
 # make db connection
-con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
+# con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
+# c = con.cursor()
+
+# connect to aws rds
+con = mysql.connector.connect(
+        host = aws_config.host,
+        user = aws_config.user,
+        password = aws_config.pw)
+
 c = con.cursor()
+c.execute("USE db1")
 
 window = create_window(c)
 
