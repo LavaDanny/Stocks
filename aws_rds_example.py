@@ -8,6 +8,7 @@ from sqlite3 import Error
 import pandas as pd
 from sqlalchemy import create_engine
 
+# download data from yahoo based on tickers and dates
 def download(bt_inputs, proxy = None):
     data = yf.download(tickers= bt_inputs['tickers'],
                        start = bt_inputs['start_date'],   
@@ -18,16 +19,16 @@ def download(bt_inputs, proxy = None):
                        proxy = proxy)
     return data
 
+# connect to aws rds
 con = mysql.connector.connect(
         host = aws_config.host,
         user = aws_config.user,
         password = aws_config.pw)
 
 c = con.cursor()
-
 c.execute("USE db1")
 
-# create price table
+# create price table if non existent
 query1 = """CREATE TABLE IF NOT EXISTS prices (
 Date VARCHAR(20),
 ticker VARCHAR(5),
@@ -36,7 +37,7 @@ PRIMARY KEY(Date, ticker)
 )"""
 c.execute(query1.replace('\n',' '))
 
-# create volume table
+# create volume table if nonexistent 
 query2 = """CREATE TABLE IF NOT EXISTS volume (
 Date VARCHAR(20),
 ticker VARCHAR(5),
