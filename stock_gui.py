@@ -31,7 +31,7 @@ def create_window(db_con):
 def remove_ticker(db_con, ticker, con, window):
 
     # remove ticker data from sql db
-    query = "DELETE FROM prices WHERE ticker = ?"
+    query = "DELETE FROM prices WHERE ticker = %s"
     c.execute(query, (ticker,))
     con.commit()
 
