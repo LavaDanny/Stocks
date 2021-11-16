@@ -5,6 +5,19 @@ from tkinter import *
 import mysql.connector
 import aws_config
 from sqlalchemy import create_engine
+import yfinance as yf  
+import pandas as pd
+
+# download data from yahoo based on tickers and dates
+def download(bt_inputs, proxy = None):
+    data = yf.download(tickers= bt_inputs['tickers'],
+                       start = bt_inputs['start_date'],   
+                       end = bt_inputs['end_date'],
+                       interval = '1d',
+                       prepost = True,
+                       threads = True,
+                       proxy = proxy)
+    return data
 
 # make a new window
 def create_window(db_con):
@@ -22,10 +35,66 @@ def create_window(db_con):
     create_ticker_dropdown(db_con, window)
 
     # create text entry to get new tickers
-    
     create_text_entry(window)
 
+    # create button to reset db
+    reset_db_button(window, db_con)
+
     return window
+
+# button to reset db to default
+def reset_db_button(window, db_con):
+    reset_btn = Button(window, text = "reset db", command = lambda: reset_db(window, db_con))
+    reset_btn.grid(row = 11, column = 1)
+
+# set db with default values
+def reset_db(window, db_con):
+
+    # create price table if non existent
+    query1 = """CREATE TABLE IF NOT EXISTS prices (
+    Date VARCHAR(20),
+    ticker VARCHAR(5),
+    price REAL,
+    PRIMARY KEY(Date, ticker)
+    )"""
+    c.execute(query1.replace('\n',' '))
+
+    # create volume table if nonexistent 
+    query2 = """CREATE TABLE IF NOT EXISTS volume (
+    Date VARCHAR(20),
+    ticker VARCHAR(5),
+    volume REAL,
+    PRIMARY KEY(Date, ticker)
+    )"""
+    c.execute(query2.replace('\n',' '))
+
+    # backtest inputs
+    bt_inputs = {'tickers': ['BA', 'UNH', 'MCD', 'HD'],
+    'start_date': '2018-01-01',
+    'end_date': '2019-08-01'}
+
+    test = download(bt_inputs)
+
+    adj_close = test['Adj Close']
+    volume = test['Volume']
+
+    # convert wide to long
+    adj_close_long = pd.melt(adj_close.reset_index(), id_vars='Date', value_vars=bt_inputs['tickers'], var_name ="ticker", value_name="price")
+    volume_long = pd.melt(volume.reset_index(), id_vars='Date', value_vars=bt_inputs['tickers'], var_name = "ticker", value_name = "volume")
+
+    # add data to aws rds
+    engine = create_engine('mysql://' + aws_config.user + ':' + aws_config.pw + '@' + aws_config.host + '/' + aws_config.database)
+    con = engine.connect()
+    adj_close_long.to_sql(name='prices', con=con, if_exists='replace')
+    volume_long.to_sql(name='volume', con=con, if_exists='replace')
+
+    # destroy window
+    window.quit()
+    window.destroy()
+
+    # create new window and table
+    window = create_window(db_con)
+
 
 # updates table data by creating new window
 def remove_ticker(db_con, ticker, con, window):
@@ -73,11 +142,11 @@ def create_table(db_con, window):
 # create text entry field
 def create_text_entry(window):
     text_entry = Text(window, height = 1, width = 10)
-    text_entry.grid(row = 11, column = 1, padx = 10, pady = 10)
+    text_entry.grid(row = 12, column = 1, padx = 10, pady = 10)
 
     # text indicating use for right box
     l = Label(window, text = "Ticker to be added: ")
-    l.grid(row = 11, column = 0, padx = 10, pady = 10)
+    l.grid(row = 12, column = 0, padx = 10, pady = 10)
 
 
 # create ticker drop down and remove button
