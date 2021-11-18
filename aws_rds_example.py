@@ -49,7 +49,7 @@ c.execute(query2.replace('\n',' '))
 # backtest inputs
 bt_inputs = {'tickers': ['BA', 'UNH', 'MCD', 'HD'],
 'start_date': '2018-01-01',
-'end_date': '2019-08-01'}
+'end_date': '2019-01-01'}
 
 test = download(bt_inputs)
 
