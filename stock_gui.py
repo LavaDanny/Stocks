@@ -94,6 +94,7 @@ def reset_db(window, db_con):
 
     # create new window and table
     window = create_window(db_con)
+    window.mainloop()
 
 
 # updates table data by creating new window
