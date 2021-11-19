@@ -40,7 +40,14 @@ def create_window(db_con):
     # create button to reset db
     reset_db_button(window, db_con)
 
+    # button to add info to db
+    add_to_db_button(window, db_con)
+
     return window
+
+def add_to_db_button(window, db_con):
+    reset_btn = Button(window, text = "add")
+    reset_btn.grid(row = 12, column = 2)
 
 # button to reset db to default
 def reset_db_button(window, db_con):
