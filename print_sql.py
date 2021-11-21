@@ -1,11 +1,15 @@
 import matplotlib.pyplot as plt
-import sqlite3
+import aws_config
+import mysql.connector
 
-# make db connection
-con = sqlite3.connect('C:\\Users\\LavaDanny\\Desktop\\Coding\\Stocks\\stock.db')
+# connect to aws rds
+con = mysql.connector.connect(
+        host = aws_config.host,
+        user = aws_config.user,
+        password = aws_config.pw)
+
 c = con.cursor()
-
-# get all data
+c.execute("USE db1")
 c.execute("SELECT * FROM prices")
 
 allData = []
