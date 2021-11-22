@@ -34,12 +34,13 @@ numPricesPerTicker = len(prices) / numTickers
 startIndex = 0
 endIndex = int(numPricesPerTicker)
 for x in range(numTickers):
-    plt.plot(dates[startIndex:endIndex], prices[startIndex:endIndex])
+    plt.plot(dates[startIndex:endIndex], prices[startIndex:endIndex], label = tickers[x])
     plt.title(tickers[x])
-    plt.ylabel('Prices ($)')
-    plt.xlabel('Date')
-    plt.show()
 
     startIndex += int(numPricesPerTicker)
     endIndex += int(numPricesPerTicker)
 
+plt.ylabel('Prices ($)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
