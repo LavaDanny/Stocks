@@ -4,13 +4,27 @@ import aws_config
 import mysql.connector
 import pandas as pd
 
-def _exponential_smooth(data, alpha):
+def exponential_smooth(data, alpha):
     """
     Function that exponentially smooths dataset so values are less 'rigid'
     :param alpha: weight factor to weight recent values more
     """
     
     return data.ewm(alpha=alpha).mean()
+
+def produce_prediction(data, window):
+    """
+    Function that produces the 'truth' values
+    At a given row, it looks 'window' rows ahead to see if the price increased (1) or decreased (0)
+    :param window: number of days, or rows to look ahead to see what the price did
+    """
+    window = 15
+
+    prediction = (data.shift(-window) >= data)
+    prediction = prediction.iloc[:-window]
+    data['pred'] = prediction.astype(int)
+    
+    return data
 
 # connect to aws rds
 con = mysql.connector.connect(
@@ -39,7 +53,7 @@ for row in c.fetchall():
 
 # change price data to dataframe and smooth
 data = pd.DataFrame(prices)
-data = _exponential_smooth(data, 0.65)
+data = exponential_smooth(data, 0.65)
 
 prices = data.values.tolist()
 
@@ -61,3 +75,7 @@ plt.ylabel('Prices ($)')
 plt.xlabel('Date')
 plt.legend()
 plt.show()
+
+data = produce_prediction(data, window=15)
+data = data.dropna() # Some indicators produce NaN values for the first few rows, we just remove them here
+data.tail()
