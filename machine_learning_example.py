@@ -1,8 +1,118 @@
 import matplotlib.pyplot as plt
+from numpy.core.numeric import cross
 from pandas.core.frame import DataFrame
 import aws_config
 import mysql.connector
 import pandas as pd
+import numpy as np
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import VotingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
+
+
+def cross_Validation(data):
+
+    # Split data into equal partitions of size len_train
+    
+    num_train = 10 # Increment of how many starting points (len(data) / num_train  =  number of train-test sets)
+    len_train = 40 # Length of each train-test set
+    
+    # Lists to store the results from each model
+    rf_RESULTS = []
+    knn_RESULTS = []
+    ensemble_RESULTS = []
+    
+    i = 0
+    while True:
+        
+        # Partition the data into chunks of size len_train every num_train days
+        df = data.iloc[i * num_train : (i * num_train) + len_train]
+        i += 1
+        print(i * num_train, (i * num_train) + len_train)
+        
+        if len(df) < 40:
+            break
+
+def _ensemble_model(rf_model, knn_model, gbt_model, X_train, y_train, X_test, y_test):
+    
+    # Create a dictionary of our models
+    estimators=[('knn', knn_model), ('rf', rf_model), ('gbt', gbt_model)]
+    
+    # Create our voting classifier, inputting our models
+    ensemble = VotingClassifier(estimators, voting='hard')
+    
+    #fit model to training data
+    ensemble.fit(X_train, y_train)
+    
+    #test our model on the test data
+    print(ensemble.score(X_test, y_test))
+    
+    prediction = ensemble.predict(X_test)
+
+    print(classification_report(y_test, prediction))
+    print(confusion_matrix(y_test, prediction))
+    
+    return ensemble
+
+def _train_KNN(X_train, y_train, X_test, y_test):
+
+    knn = KNeighborsClassifier()
+    # Create a dictionary of all values we want to test for n_neighbors
+    params_knn = {'n_neighbors': np.arange(1, 25)}
+    
+    # Use gridsearch to test all values for n_neighbors
+    knn_gs = GridSearchCV(knn, params_knn, cv=5)
+    
+    # Fit model to training data
+    knn_gs.fit(X_train, y_train)
+    
+    # Save best model
+    knn_best = knn_gs.best_estimator_
+     
+    # Check best n_neigbors value
+    print(knn_gs.best_params_)
+    
+    prediction = knn_best.predict(X_test)
+
+    print(classification_report(y_test, prediction))
+    print(confusion_matrix(y_test, prediction))
+    
+    return knn_best
+
+def _train_random_forest(X_train, y_train, X_test, y_test):
+
+    """
+    Function that uses random forest classifier to train the model
+    :return:
+    """
+    
+    # Create a new random forest classifier
+    rf = RandomForestClassifier()
+    
+    # Dictionary of all values we want to test for n_estimators
+    params_rf = {'n_estimators': [110,130,140,150,160,180,200]}
+    
+    # Use gridsearch to test all values for n_estimators
+    rf_gs = GridSearchCV(rf, params_rf, cv=5)
+    
+    # Fit model to training data
+    rf_gs.fit(X_train, y_train)
+    
+    # Save best model
+    rf_best = rf_gs.best_estimator_
+    
+    # Check best n_estimators value
+    print(rf_gs.best_params_)
+    
+    prediction = rf_best.predict(X_test)
+
+    print(classification_report(y_test, prediction))
+    print(confusion_matrix(y_test, prediction))
+    
+    return rf_best
 
 def exponential_smooth(data, alpha):
     """
@@ -79,3 +189,9 @@ plt.show()
 data = produce_prediction(data, window=15)
 data = data.dropna() # Some indicators produce NaN values for the first few rows, we just remove them here
 data.tail()
+
+cross_Validation(data)
+
+# rf_model = _train_random_forest(X_train, y_train, X_test, y_test)
+# knn_model = _train_KNN(X_train, y_train, X_test, y_test)
+# ensemble_model = _ensemble_model(rf_model, knn_model, gbt_model, X_train, y_train, X_test, y_test)
